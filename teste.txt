@@ -1,0 +1,13 @@
+import re
+teste = 'baralho'
+teste2 = "barraco"
+teste3 = r"banana\"maçã\""
+s = 0
+
+#=(?:(?!#=).)*?=#|#=.*?(?=\n|$)
+
+pattern = re.compile(r'#.*?(?=\n|$)', re.DOTALL)
+result = re.findall(pattern, s)
+print(result)
+
+#=(?:(?!#=).)*?=#|#=.*?(?=\n|$)
