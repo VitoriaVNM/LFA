@@ -11,3 +11,37 @@ result = re.findall(pattern, s)
 print(result)
 
 #=(?:(?!#=).)*?=#|#=.*?(?=\n|$)
+
+
+'''
+gramatica sugerida
+E -> E + E
+E -> E - E
+E -> E * E 
+E -> E / E
+E -> sqrt(E)
+E -> n
+
+gramatica com variavel
+E -> E + E
+E -> E - E
+E -> E * E 
+E -> E / E
+E -> sqrt(E)
+E -> n
+E -> VAR
+VAR -> x
+VAR -> y
+VAr -> z
+'''
+
+'''
+árvore para: 1+2*3
+    E -> E + E
+    E -> n + E * E
+    E -> 1 + n * E
+    E -> 1 + 2 * E
+    E -> 1 + 2 * n
+    E -> 1 + 2 * 3
+'''
+
