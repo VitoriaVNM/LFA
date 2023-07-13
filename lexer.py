@@ -1,5 +1,5 @@
 #Vitória Nazareth | DRE: 121076766
-#Thiago Nobre | DRE: 
+#Thiago Nobre | DRE: 121086282 
 
 import re
 #grupo dos comentarios
@@ -31,7 +31,7 @@ def readFile():
 
 lines = readFile() 
 
-for j in range(len(lines)):
+for j in range(len(lines)): 
     sample = lines[j]
     i = 0
     while(i < len(sample)):
