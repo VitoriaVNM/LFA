@@ -3,6 +3,28 @@
 
 import numpy as np
 import math as m
+'''    S -> VS PS
+    
+    VS ->
+    VS -> VS <var> '=' E <newline>
+    
+    PS -> 
+    PS -> PS '@' E <newline>
+    
+    E -> E '+' T
+    E -> E '-' T
+    E -> T
+    
+    T -> T '*' F
+    T -> T '/' F
+    T -> F
+    
+    F -> '-' F
+    F -> <num>
+    F -> <var>
+    F -> <sqrt> '(' E ')'
+    F -> '(' E ')'''
+
 
 #classe das operações binárias (+ - * e /)
 class ExpBin():
@@ -38,6 +60,14 @@ class ExpNum():
         self.tag ='ExpNum'
         self.value = value
 
+class ExpParent():
+    def __init__(self, lado_e, exp_c, lado_d):
+        self.tag ='ExpNum'
+        self.lado_e = lado_e
+        self.exp_c = exp_c
+        self.lado_d = lado_d
+
+
 
 #recebe uma arvore e calcula seu resultado
 def Calcula_Exp(exp, dict):
@@ -65,6 +95,12 @@ def Calcula_Exp(exp, dict):
         if exp.op == 'sqrt':
             return m.sqrt(operando)
         assert False, "Operador inválido: " + exp.op
+
+    #se for (E)
+    if exp.tag == 'ExpParent':
+        valor = exp.exp_c
+        operando = Calcula_Exp(valor, dict)
+        return operando   
 
     #se uma operação binária
     if exp.tag == 'ExpBin':
@@ -122,9 +158,6 @@ def Parenteses_Exp(exp):
         assert False, "Operador inválido: " + exp.op
         
     assert False, "Operador inválido: " + exp.op
-
-
-
 
 
 
