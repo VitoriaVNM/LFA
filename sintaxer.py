@@ -1,5 +1,7 @@
 dict = {}
 
+
+
 class Parser():
     def __init__(self, tokens, next_token, i):
         self.tokens = tokens #lista
@@ -7,9 +9,9 @@ class Parser():
         self.i = i #posição na lista
 
     def peek(self, id):
-        if self.next_token.id == id:
+        if self.next_token.tipo == id:
             return True
-        assert False, "Não tem esse tipo:" + id  
+        #assert False, "Não tem esse tipo:" + id  
     
     def consome(self, id):
         if self.peek(id):
@@ -20,8 +22,10 @@ class Parser():
     
     def ParseS(self):
     #S -> VS PS
-        self.ParseV()
-        self.ParseP()
+        parte_V = self.ParseV()
+        parte_P = self.ParseP()
+        return parte_P
+
 
 
     def ParseV(self):
@@ -80,34 +84,65 @@ class Parser():
         return exp
     
     def ParseF(self):
-    #F -> '-' F
-    #F -> <num>
-    #F -> <var>
-    #F -> <sqrt> '(' E ')'
-    #F -> '(' E ')'
         #exp = self.ParseF()
         while True: #why?
             if self.peek("VAR"):
-                id = self.consome("VAR")
-                #variavel = ExpVar(id)
-            elif self.peek("NUMERO"):
-                id = self.consome("NUMERO")
+                self.consome("VAR")
+                id = self.tokens.valor
+                self.consome("IGUAL")
+                if self.peek("NUMERO"):
+                    self.consome("NUMERO")
+                    valor = self.tokens.valor
+                    dict[id] = valor
+                elif self.peek("RAIZ"):
+                    self.consome("RAIZ")
+                    self.consome("SIMBOLO")
+                    exp = self.ParseE()
+                    self.consome("SIMBOLO")
 
-            elif self.peek("RAIZ"):
-                id = self.consome("RAIZ")
-                
-         
-            elif self.peek("-"):
-                id = self.consome("-"):
-                operando = self.ParseF()
-                return -operando
-                #numero = ExpNum(id)
+            elif self.peek("OPERACAO"):
+                id = self.consome("OPERACAO")
+                if id == '-':
+                    operando = self.ParseF()
+                    return -operando
+                return SyntaxError
+
+
             else:
                 break
         return exp
 
 
 
+
+####################exemplinho #########################################
+class Objetos():
+    def __init__(self, tipo, valor):
+        self.tipo = tipo
+        self.valor = valor
+        
+    def __str__(self):
+      return f'ABC =  {self.tipo}'  
+
+
+
+
+lista = []
+objeto1 = Objetos("IGUAL", '=')
+objeto2 = Objetos("VAR", 'a') 
+objeto3 = Objetos("NUMERO", 2)
+lista.append(objeto1)
+lista.append(objeto2)
+lista.append(objeto3)
+
+
+
+bicho = Parser(lista, lista[1], 0)
+
+soma = bicho.ParseS()
+#dict = {'x': 1}
+
+print(soma) 
 
 
 
