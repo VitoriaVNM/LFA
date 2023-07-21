@@ -19,10 +19,10 @@ branco = re.compile(r' +?')
 prints = re.compile(r'^@+') #fica com os prints
 
 #grupos dos parentese
-parenteses = re.compile(r'\( | \)')
+parenteses = re.compile(r'\(|\)')
 
 #grupo das operações
-operacao = re.compile(r'+|-|*|\\')
+operacao = re.compile(r'\+|\-|\*|\/')
 
 #grupo dos iguais
 iguais = re.compile(r'=+?')                       

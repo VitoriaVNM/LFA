@@ -54,6 +54,11 @@ class ExpVar():
         self.tag = 'ExpVar'
         self.var = var
 
+class ExpP():
+    def __init__(self, exp):
+        self.tag = 'ExpP'
+        self.exp = exp
+
 #classe do valor (atribui n)
 class ExpNum():
     def __init__(self, value):
@@ -62,10 +67,22 @@ class ExpNum():
 
 class ExpParent():
     def __init__(self, lado_e, exp_c, lado_d):
-        self.tag ='ExpNum'
+        self.tag ='ExpParent'
         self.lado_e = lado_e
         self.exp_c = exp_c
         self.lado_d = lado_d
+
+class ExpS():
+    def __init__(self, vs, ps):
+        self.tag = 'ExpS'
+        self.vs = vs
+        self.ps = ps
+
+class ExpAtr():
+    def __init__(self, var, valor):
+        self.tag = 'ExpAtr'
+        self.var = var
+        self.valor = valor
 
 
 
@@ -166,4 +183,3 @@ soma = ExpBin('+',ExpVar('x'),ExpBin('*',ExpNum(2),ExpNum(3)))
 dict = {'x': 1}
 resultado = Calcula_Exp(soma, dict)
 print(resultado) 
-

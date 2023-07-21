@@ -11,111 +11,109 @@ class Parser():
     def peek(self, id):
         if self.next_token.tipo == id:
             return True
-        #assert False, "Não tem esse tipo:" + id  
     
     def consome(self, id):
         if self.peek(id):
+            token = self.next_token
             self.i += 1
             self.next_token = self.tokens[self.i]
-            return id
+            return token.valor
         return SyntaxError
     
     def ParseS(self):
     #S -> VS PS
         parte_V = self.ParseV()
         parte_P = self.ParseP()
-        return parte_P
 
-
+        return ExpS(parte_V, parte_P)
 
     def ParseV(self):
     #VS ->     
     #VS -> VS <var> '=' E <newline>
-        while self.peek("VAR"):
-            id = self.consome("VAR")
-            self.consome("IGUAL")
-            exp = self.ParseE()
-            dict[id] = exp   
-        return dict
-    
+        listaCalc = []
+        while True:
+            if self.peek("VAR"):
+                var = self.consome("VAR")
+                self.consome("IGUAL")
+                exp = self.ParseE()
+                listaCalc.append(ExpAtr(ExpVar(var), exp))
+            else:
+                break
+        return listaCalc
+
     def ParseP(self):
     #PS ->
     #PS -> PS '@' E <newline>
-        while self.peek("@"):
-            id = self.consome("@")
-            exp = self.ParseE()
-            dict[id] = exp
-        return dict
+        listaPrint = []
+        while True:
+            if self.peek("PRINT"):
+                self.consome("PRINT")
+                exp = self.ParseE()
+                listaPrint.append(ExpP(exp))
+            else:
+                break
+        return listaPrint
     
     def ParseE(self):
     #E -> E '+' T
     #E -> E '-' T
     #E -> T
-        exp = self.ParseT() #parseT pq E precisa ir pra T antes de virar n
-        while True: #why?
-            if self.peek("+"):
-                id = self.consome("+")
-                exp_T = self.ParseT()
-                #return ExpBin(id,exp,exp_T)
-            elif self.peek("-"):
-                id = self.consome("-")
-                exp_T = self.ParseT()
-                #return ExpBin(id,exp,exp_T)
+        exp_T = self.ParseT() 
+        while True: 
+            if self.peek("OPERACAO"):
+                op = self.consome("OPERACAO")
+                exp_E = self.ParseE()
+                exp_T = ExpBin(op, exp_E, exp_T)
             else:
                 break
-        return exp
+        return exp_T
     
     def ParseT(self):
     #T -> T '*' F
     #T -> T '/' F
     #T -> F
-        exp = self.ParseF()
-        while True: #why?
-            if self.peek("*"):
-                id = self.consome("*")
+        exp_F = self.ParseF()
+        while True: 
+            if self.peek("OPERACAO"):
+                op = self.consome("OPERACAO")
                 exp_T = self.ParseT()
-                #operando = ExpBin(id,exp,exp_T)
-            elif self.peek("/"):
-                id = self.consome("/")
-                exp_T = self.ParseT()
-                #operando = ExpBin(id,exp,exp_T)
+                exp_F = ExpBin(op, exp_T, exp_F)
             else:
                 break
-        return exp
+        return exp_F
     
+    #F -> '-' F
+    #F -> <num>
+    #F -> <var>
+    #F -> <sqrt> '(' E ')'
+    #F -> '(' E ')'
     def ParseF(self):
-        #exp = self.ParseF()
-        while True: #why?
-            if self.peek("VAR"):
-                self.consome("VAR")
-                id = self.tokens.valor
-                self.consome("IGUAL")
-                if self.peek("NUMERO"):
-                    self.consome("NUMERO")
-                    valor = self.tokens.valor
-                    dict[id] = valor
-                elif self.peek("RAIZ"):
-                    self.consome("RAIZ")
-                    self.consome("SIMBOLO")
-                    exp = self.ParseE()
-                    self.consome("SIMBOLO")
-
-            elif self.peek("OPERACAO"):
-                id = self.consome("OPERACAO")
-                if id == '-':
-                    operando = self.ParseF()
-                    return -operando
-                return SyntaxError
-
-
-            else:
-                break
-        return exp
+        if self.peek("OPERACAO"):
+            op = self.consome("OPERACAO")
+            if op == '-':
+                return -self.ParseF()  
+        elif self.peek("NUMERO"):
+            num = self.consome("NUMERO")
+            return ExpNum(num)
+        elif self.peek("VAR"):
+            var = self.consome("VAR")
+            return ExpVar(var)                
+        elif self.peek("RAIZ"):
+            raiz = self.consome("RAIZ")
+            self.consome("SIMBOLO")
+            exp = self.ParseE()
+            self.consome("SIMBOLO")
+            return ExpFunc(raiz, exp)
+        elif self.peek("SIMBOLO"):
+            simb1 = self.consome("SIMBOLO")
+            exp = self.ParseE()
+            simb2 = self.consome("SIMBOLO")
+            return ExpParent(simb1, exp, simb2)
+        elif self.peek("$"):
+            return
+        return SyntaxError
 
 
-
-
-####################exemplinho #########################################
 class Objetos():
     def __init__(self, tipo, valor):
         self.tipo = tipo
@@ -140,7 +138,6 @@ lista.append(objeto3)
 bicho = Parser(lista, lista[1], 0)
 
 soma = bicho.ParseS()
-#dict = {'x': 1}
 
 print(soma) 
 
